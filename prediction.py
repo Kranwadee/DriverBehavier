@@ -4,9 +4,9 @@ import torchvision.transforms as T
 from PIL import Image
 
 def pred_class(model: torch.nn.Module,
-               image,
+               image: Image.Image,
                class_names: List[str],
-               image_size: Tuple[int, int] = (224, 224)):
+               image_size: Tuple[int, int] = (224, 224)) -> Tuple[str, List[float]]:
     
     # Apply transformations to the image
     image_transform = T.Compose([
@@ -27,7 +27,7 @@ def pred_class(model: torch.nn.Module,
     model.eval()
 
     # Disable gradient calculation for inference
-    with torch.inference_mode():
+    with torch.no_grad():  # Changed from torch.inference_mode()
         # Make predictions
         target_image_pred = model(transformed_image)
 
@@ -38,9 +38,23 @@ def pred_class(model: torch.nn.Module,
         target_image_pred_label = torch.argmax(target_image_pred_probs, dim=1)
 
         # Extract the predicted class name
-        predicted_class = class_names[target_image_pred_label]
+        predicted_class = class_names[target_image_pred_label.item()]
 
         # Move the probabilities to CPU and convert to numpy
-        prob = target_image_pred_probs.cpu().numpy()
+        prob = target_image_pred_probs.cpu().numpy().flatten()
 
     return predicted_class, prob
+
+# Example transforms
+transforms = {
+    "train": T.Compose([
+        T.Resize((224, 224)),
+        T.ToTensor(),
+        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ]),
+    "test": T.Compose([
+        T.Resize((224, 224)),
+        T.ToTensor(),
+        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+}
