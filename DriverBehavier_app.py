@@ -12,7 +12,7 @@ st.header('Please up load picture')
 
 
 #Load Model 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('mobilenetv3_large_1004.pt', map_location=device)
 
 
