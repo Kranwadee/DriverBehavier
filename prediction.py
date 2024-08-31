@@ -22,9 +22,16 @@ def pred_class(model: torch.nn.Module,
     # Transform the image and add an extra dimension
     transformed_image = transform(image).unsqueeze(dim=0).to(device)
 
+    # Convert image to float32
+    transformed_image = transformed_image.float()
+
     # Ensure the model is in evaluation mode and on the correct device
     model.eval()
     model.to(device)
+
+    # Convert model to float32 if it is not already
+    if next(model.parameters()).dtype == torch.float16:
+        model = model.to(torch.float32)
 
     # Perform inference
     with torch.no_grad():
