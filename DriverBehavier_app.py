@@ -8,17 +8,14 @@ import numpy as np
 st.title('DriverBehavier Classification')
 
 #Set Header 
-st.header('Please up load picture')
-
+st.header('Please upload picture')
 
 #Load Model 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('mobilenetv3_large_1004.pt', map_location=device)
 
-
-
 # Display image & Prediction 
-uploaded_image = st.file_uploader('Choose an image', type=['jpg'])
+uploaded_image = st.file_uploader('Choose an image', type=['jpg', 'jpeg', 'png'])
 
 if uploaded_image is not None:
     image = Image.open(uploaded_image).convert('RGB')
@@ -27,16 +24,9 @@ if uploaded_image is not None:
     class_name = ['other_activities', 'safe_driving', 'talking_phone', 'texting_phone', 'turning']
 
     if st.button('Prediction'):
-        #Prediction class
-        probli = pred_class(model,image,class_name)
+        # Prediction class
+        predicted_class, prob = pred_class(model, image, class_name)
         
         st.write("## Prediction Result")
-        # Get the index of the maximum value in probli[0]
-        max_index = np.argmax(probli[0])
-
-        # Iterate over the class_name and probli lists
-        for i in range(len(class_name)):
-            # Set the color to blue if it's the maximum value, otherwise use the default color
-            color = "blue" if i == max_index else None
-            st.write(f"## <span style='color:{color}'>{class_name[i]} : {probli[0][i]*100:.2f}%</span>", unsafe_allow_html=True)
-
+        st.write(f"### Predicted Class: {predicted_class}")
+        st.write(f"### Probability: {prob*100:.2f}%")
