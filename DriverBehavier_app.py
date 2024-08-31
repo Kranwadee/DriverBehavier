@@ -5,14 +5,15 @@ from prediction import pred_class
 import numpy as np
 
 # Set title 
-st.title('DriverBehavier Classification')
+st.title('Driver Behavior Classification')
 
-#Set Header 
-st.header('Please upload picture')
+# Set Header 
+st.header('Please upload a picture')
 
-#Load Model 
+# Load Model 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('mobilenetv3_large_1004.pt', map_location=device)
+model.eval()
 
 # Display image & Prediction 
 uploaded_image = st.file_uploader('Choose an image', type=['jpg', 'jpeg', 'png'])
@@ -23,10 +24,14 @@ if uploaded_image is not None:
     
     class_name = ['other_activities', 'safe_driving', 'talking_phone', 'texting_phone', 'turning']
 
-    if st.button('Prediction'):
-        # Prediction class
-        predicted_class, prob = pred_class(model, image, class_name)
+    if st.button('Predict'):
+        try:
+            # Prediction class
+            predicted_class, prob = pred_class(model, image, class_name)
+            
+            st.write("## Prediction Result")
+            st.write(f"**Class:** {predicted_class}")
+            st.write(f"**Probability:** {prob * 100:.2f}%")
         
-        st.write("## Prediction Result")
-        st.write(f"### Predicted Class: {predicted_class}")
-        st.write(f"### Probability: {prob*100:.2f}%")
+        except Exception as e:
+            st.error(f"Error occurred during prediction: {str(e)}")
