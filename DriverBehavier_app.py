@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 from PIL import Image
 from prediction import pred_class
 import torch
@@ -12,7 +12,7 @@ st.header('Please upload a picture')
 # Load Model 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('mobilenetv3_large_1004.pt', map_location=device)
-model.eval()
+model.to(device).eval()  # Ensure the model is on the correct device and in evaluation mode
 
 # Display image & Prediction 
 uploaded_image = st.file_uploader('Choose an image', type=['jpg', 'jpeg', 'png'])
@@ -26,7 +26,7 @@ if uploaded_image is not None:
     if st.button('Predict'):
         try:
             # Prediction class
-            predicted_class, prob = pred_class(model, image, class_name)
+            predicted_class, prob = pred_class(model, image, class_name, device=device)
             
             st.write("## Prediction Result")
             st.write(f"**Class:** {predicted_class}")
