@@ -29,10 +29,6 @@ def pred_class(model: torch.nn.Module,
     model.eval()
     model.to(device)
 
-    # Convert model to float32 if it is not already
-    if next(model.parameters()).dtype == torch.float16:
-        model = model.to(torch.float32)
-
     # Perform inference
     with torch.no_grad():
         output = model(transformed_image)
