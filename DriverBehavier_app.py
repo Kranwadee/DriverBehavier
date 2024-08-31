@@ -1,8 +1,7 @@
 import streamlit as st 
-import torch
 from PIL import Image
 from prediction import pred_class
-import numpy as np
+import torch
 
 # Set title 
 st.title('Driver Behavior Classification')
