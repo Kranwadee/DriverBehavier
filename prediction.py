@@ -4,14 +4,11 @@ import torch
 import torchvision.transforms as transforms
 
 def pred_class(model: torch.nn.Module,
-               image_path: str,
+               image: Image.Image,
                class_names: List[str],
                image_size: Tuple[int, int] = (224, 224),
                transform: transforms = None,
                device: torch.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')) -> Tuple[str, float]:
-
-    # 2. Open image
-    img = Image.open(image_path).convert('RGB')
 
     # 3. Create transformation for image (if one doesn't exist)
     if transform is not None:
@@ -33,7 +30,7 @@ def pred_class(model: torch.nn.Module,
     model.eval()
     with torch.no_grad():  # Use torch.no_grad() for older versions of PyTorch
         # 6. Transform and add an extra dimension to image (model requires samples in [batch_size, color_channels, height, width])
-        transformed_image = image_transform(img).unsqueeze(dim=0).to(device)
+        transformed_image = image_transform(image).unsqueeze(dim=0).to(device)
 
         # 7. Make a prediction on image with an extra dimension and send it to the target device
         target_image_pred = model(transformed_image)
